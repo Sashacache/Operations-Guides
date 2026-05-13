@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moneybox Credit Fund · IM Operations Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --dark:#242321;
+  --lime:#d6f1a0;
+  --sand:#d7c9bc;
+  --bg:#f3f4f3;
+  --white:#ffffff;
+  --muted:#6b6a68;
+  --border:rgba(36,35,33,0.12);
+  --border-mid:rgba(36,35,33,0.2);
+
+  /* role colours */
+  --im:#f5a623;        /* orange — IM/Butn */
+  --im-bg:#fff8ed;
+  --re:#7c6cdc;        /* purple — RE/Cache */
+  --re-bg:#f4f2ff;
+  --admin:#3ab89a;     /* teal — Admin/FundOps */
+  --admin-bg:#f0faf7;
+  --custodian:#e05252; /* red — Custodian/Sandhurst */
+  --custodian-bg:#fdf2f2;
+  --investor:#4a8fd4;  /* blue — Investor */
+  --investor-bg:#eef4fb;
+
+  --amber:#c27c2a;
+  --amber-bg:#fdf6ed;
+  --green:#4a9b6f;
+  --green-bg:#f0faf4;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);font-weight:300;line-height:1.6;overflow-x:hidden}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(36,35,33,0.055) 1px,transparent 1px);
+  background-size:30px 30px;pointer-events:none;z-index:0;
+}
+
+/* ── HEADER ── */
+.site-header{
+  background:var(--dark);padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:62px;position:sticky;top:0;z-index:200;
+}
+.logo-wrap{display:flex;align-items:center;gap:14px}
+.logo{font-size:20px;font-weight:500;letter-spacing:0.2em;color:#fff;text-transform:uppercase}
+.logo sup{font-size:8px;vertical-align:super;letter-spacing:0}
+.logo-divider{width:1px;height:22px;background:rgba(255,255,255,0.2)}
+.logo-sub{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45)}
+.header-pill{background:var(--lime);color:var(--dark);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:4px}
+
+/* ── HERO ── */
+.hero{
+  background:var(--dark);padding:52px 40px 60px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 70% 50%,rgba(214,241,160,0.08) 0%,transparent 60%);
+}
+.hero-inner{position:relative;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-block;background:rgba(214,241,160,0.12);border:1px solid rgba(214,241,160,0.3);color:var(--lime);font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:22px}
+.hero h1{font-size:clamp(26px,3.8vw,44px);font-weight:500;color:#fff;letter-spacing:0.01em;line-height:1.15;margin-bottom:14px}
+.hero h1 em{color:var(--lime);font-style:normal}
+.hero p{color:rgba(255,255,255,0.5);font-size:14.5px;max-width:580px;line-height:1.75;margin-bottom:32px}
+
+/* role pills in hero */
+.role-pills{display:flex;gap:10px;flex-wrap:wrap}
+.role-pill{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;letter-spacing:0.03em}
+.rp-im{background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.35);color:var(--im)}
+.rp-re{background:rgba(124,108,220,0.15);border:1px solid rgba(124,108,220,0.35);color:var(--re)}
+.rp-admin{background:rgba(58,184,154,0.15);border:1px solid rgba(58,184,154,0.35);color:var(--admin)}
+.rp-cust{background:rgba(224,82,82,0.15);border:1px solid rgba(224,82,82,0.35);color:var(--custodian)}
+.rp-inv{background:rgba(74,143,212,0.15);border:1px solid rgba(74,143,212,0.35);color:var(--investor)}
+.role-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-im{background:var(--im)}.dot-re{background:var(--re)}.dot-admin{background:var(--admin)}.dot-cust{background:var(--custodian)}.dot-inv{background:var(--investor)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;max-width:1200px;margin:0 auto;min-height:calc(100vh - 62px)}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:250px;flex-shrink:0;background:var(--white);
+  border-right:1px solid var(--border);
+  position:sticky;top:62px;height:calc(100vh - 62px);
+  overflow-y:auto;padding:28px 0;
+}
+.sidebar-heading{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:8px 22px 4px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 22px;cursor:pointer;font-size:13px;
+  color:var(--dark);transition:all 0.15s;
+  border-left:3px solid transparent;text-decoration:none;
+}
+.nav-item:hover{background:var(--bg)}
+.nav-item.active{border-left-color:var(--lime);background:#f0faf0;font-weight:500}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── MAIN ── */
+.main{flex:1;padding:44px;min-width:0}
+.section{display:none;animation:fadeUp 0.25s ease}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.section-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.section-title{font-size:28px;font-weight:500;letter-spacing:0.01em;margin-bottom:10px}
+.section-desc{font-size:14px;color:var(--muted);max-width:640px;line-height:1.75;margin-bottom:32px}
+
+/* ── FLOW DIAGRAM ── */
+.flow-wrap{margin-bottom:36px}
+.flow-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+
+.flow{display:flex;flex-direction:column;gap:0;position:relative}
+.flow-step{
+  display:flex;align-items:flex-start;gap:0;
+  position:relative;
+}
+.flow-left{
+  display:flex;flex-direction:column;align-items:center;
+  width:44px;flex-shrink:0;
+}
+.flow-num{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;flex-shrink:0;z-index:1;
+  background:var(--dark);color:var(--lime);
+}
+.flow-line{width:2px;flex:1;min-height:20px;background:var(--border-mid);margin:0 auto}
+.flow-step:last-child .flow-line{display:none}
+
+.flow-body{
+  flex:1;background:var(--white);border:1px solid var(--border);
+  border-radius:8px;padding:16px 20px;margin-bottom:12px;
+  margin-left:14px;transition:box-shadow 0.2s;
+}
+.flow-body:hover{box-shadow:0 4px 20px rgba(36,35,33,0.08)}
+.flow-role{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  padding:2px 8px;border-radius:4px;margin-bottom:8px;
+}
+.role-im{background:var(--im-bg);color:var(--im)}
+.role-re{background:var(--re-bg);color:var(--re)}
+.role-admin{background:var(--admin-bg);color:var(--admin)}
+.role-cust{background:var(--custodian-bg);color:var(--custodian)}
+.role-inv{background:var(--investor-bg);color:var(--investor)}
+
+.flow-action{font-size:14px;font-weight:500;color:var(--dark);margin-bottom:6px}
+.flow-detail{font-size:13px;color:var(--muted);line-height:1.65}
+.flow-detail ul{margin-top:6px;margin-left:16px;list-style:disc}
+.flow-detail ul li{margin-bottom:4px}
+
+.flow-sub{
+  margin-top:10px;background:rgba(36,35,33,0.03);border-radius:6px;
+  padding:12px 14px;border-left:3px solid var(--border-mid);
+  font-size:12.5px;color:var(--muted);line-height:1.65;
+}
+.flow-sub strong{color:var(--dark);font-weight:500}
+
+/* ── ALERT BOX ── */
+.alert{
+  border-radius:8px;padding:14px 18px;margin-bottom:20px;
+  display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.65;
+}
+.alert.warn{background:var(--amber-bg);border:1px solid rgba(194,124,42,0.25)}
+.alert.danger{background:#fdf2f2;border:1px solid rgba(224,82,82,0.25)}
+.alert.info{background:#eef4fb;border:1px solid rgba(74,143,212,0.25)}
+.alert.success{background:var(--green-bg);border:1px solid rgba(74,155,111,0.25)}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.alert strong{font-weight:600;display:block;margin-bottom:3px}
+
+/* ── REPORT TABLE ── */
+.report-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:28px;background:var(--white);border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.report-table th{background:var(--dark);color:var(--lime);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;padding:11px 16px;text-align:left;font-weight:600}
+.report-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+.report-table tr:last-child td{border-bottom:none}
+.report-table tr:hover td{background:#fafaf8}
+.report-table td:first-child{font-weight:500;color:var(--dark);width:200px}
+.freq-badge{display:inline-block;font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:4px}
+.freq-monthly{background:var(--im-bg);color:var(--im)}
+.freq-quarterly{background:var(--re-bg);color:var(--re)}
+.freq-onetime{background:var(--admin-bg);color:var(--admin)}
+.freq-annual{background:var(--investor-bg);color:var(--investor)}
+.freq-trigger{background:#f3f0ff;color:#6b5fc7}
+
+/* ── REQUIREMENT CARDS ── */
+.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+@media(max-width:860px){.req-grid{grid-template-columns:1fr}}
+.req-card{
+  background:var(--white);border:1px solid var(--border);border-radius:8px;
+  padding:20px;transition:box-shadow 0.2s;
+}
+.req-card:hover{box-shadow:0 4px 20px rgba(36,35,33,0.08)}
+.req-card.im-border{border-left:4px solid var(--im)}
+.req-card.re-border{border-left:4px solid var(--re)}
+.req-card.admin-border{border-left:4px solid var(--admin)}
+.req-card.cust-border{border-left:4px solid var(--custodian)}
+.req-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:10px}
+.req-title{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--dark)}
+.req-body{font-size:13px;color:var(--muted);line-height:1.7}
+.req-body ul{margin-left:16px;list-style:disc;margin-top:6px}
+.req-body ul li{margin-bottom:4px}
+.req-body strong{color:var(--dark);font-weight:500}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.checklist li{
+  display:flex;align-items:flex-start;gap:12px;background:var(--white);
+  border:1px solid var(--border);border-radius:6px;padding:13px 16px;
+  font-size:13px;cursor:pointer;transition:all 0.15s;
+}
+.checklist li:hover{background:#fafaf8}
+.checklist li.checked{background:var(--green-bg);border-color:rgba(74,155,111,0.3)}
+.check-box{width:20px;height:20px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;margin-top:1px}
+.checklist li.checked .check-box{background:var(--green);border-color:var(--green)}
+.check-icon{display:none;color:#fff;font-size:12px;font-weight:700}
+.checklist li.checked .check-icon{display:block}
+.check-text strong{font-weight:500;display:block;margin-bottom:2px;font-size:13.5px}
+.check-text span{color:var(--muted);font-size:12px}
+
+/* ── PROGRESS ── */
+.progress-bar{background:rgba(36,35,33,0.08);border-radius:4px;height:5px;margin-bottom:6px}
+.progress-fill{background:var(--lime);height:100%;border-radius:4px;transition:width 0.4s ease}
+.progress-label{font-size:12px;color:var(--muted);margin-bottom:20px}
+
+/* ── DIVIDER ── */
+.sub-heading{font-size:13px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--dark);margin:28px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+/* ── PI BOX ── */
+.pi-box{
+  background:var(--dark);color:rgba(255,255,255,0.8);
+  border-radius:8px;padding:20px 24px;margin-bottom:16px;font-size:13px;line-height:1.75;
+  position:relative;
+}
+.pi-box .pi-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:10px;display:block}
+.pi-box ul{margin-left:18px;list-style:disc}
+.pi-box ul li{margin-bottom:5px}
+.pi-box strong{color:var(--lime)}
+
+/* ── FOOTER ── */
+footer{background:var(--dark);color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding:20px 40px;text-align:center}
+footer span{color:var(--lime)}
+
+/* scrollbar */
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+@media(max-width:768px){
+  .sidebar{display:none}.main{padding:28px 20px}
+  .hero{padding:36px 20px 44px}.site-header{padding:0 20px}
+  .req-grid{grid-template-columns:1fr}
+}
+/* ── FUND STRUCTURE DIAGRAM ── */
+.struct-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:32px;margin-bottom:28px;overflow-x:auto}
+.struct-diagram{min-width:560px;position:relative}
+.struct-row{display:flex;justify-content:center;align-items:flex-start;gap:0;margin-bottom:0;position:relative}
+.struct-node{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;border-radius:8px;padding:12px 16px;font-size:12px;font-weight:500;
+  min-width:120px;max-width:140px;border:2px solid transparent;position:relative;
+}
+.struct-node.investor{background:var(--investor-bg);border-color:var(--investor);color:var(--investor)}
+.struct-node.re{background:var(--re-bg);border-color:var(--re);color:var(--re)}
+.struct-node.im{background:var(--im-bg);border-color:var(--im);color:var(--im)}
+.struct-node.admin{background:var(--admin-bg);border-color:var(--admin);color:var(--admin)}
+.struct-node.custodian{background:var(--custodian-bg);border-color:var(--custodian);color:var(--custodian)}
+.struct-node.spv{background:#fff8f0;border-color:#e8831a;color:#b85e00;border-style:dashed}
+.struct-node .node-label{font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;line-height:1.3}
+.struct-node .node-sub{font-size:10px;font-weight:300;opacity:0.75;margin-top:3px;line-height:1.3}
+.struct-node .node-tag{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;opacity:0.7}
+
+/* connector lines using SVG */
+.struct-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* legend */
+.struct-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.leg-line{width:24px;height:2px}
+.leg-line.solid{background:var(--dark)}
+.leg-line.dashed{background:repeating-linear-gradient(90deg,var(--muted) 0,var(--muted) 4px,transparent 4px,transparent 8px)}
+.leg-line.approval{background:var(--re)}
+.leg-line.data{background:var(--admin);height:2px;background:repeating-linear-gradient(90deg,var(--admin) 0,var(--admin) 4px,transparent 4px,transparent 8px)}
+
+/* compact inline structure strip (shown in flow sections) */
+.struct-strip{
+  background:var(--dark);border-radius:8px;padding:16px 20px;
+  margin-bottom:24px;display:flex;align-items:center;gap:0;overflow-x:auto;
+}
+.strip-node{
+  display:flex;flex-direction:column;align-items:center;
+  font-size:10px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;
+  color:rgba(255,255,255,0.7);min-width:80px;text-align:center;
+}
+.strip-dot{width:28px;height:28px;border-radius:50%;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.strip-arrow{color:rgba(255,255,255,0.3);font-size:18px;padding:0 4px;margin-top:-18px;flex-shrink:0}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <div class="logo-wrap">
+    <div class="logo">CACHE<sup>®</sup></div>
+    <div class="logo-divider"></div>
+    <div class="logo-sub">Moneybox Credit Fund</div>
+  </div>
+  <div class="header-pill">IM Operations Guide</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Butn · Moneybox IM Pty Ltd · Investment Manager</div>
+    <h1>Your operating manual<br>for the <em>Moneybox Credit Fund</em></h1>
+    <p>Everything Butn / Moneybox IM needs to know about working with Cache as Responsible Entity — fund flows, reporting obligations, proper instruction requirements, and governance.</p>
+    <div class="role-pills">
+      <div class="role-pill rp-im"><span class="role-dot dot-im"></span>Butn / Moneybox IM — You</div>
+      <div class="role-pill rp-re"><span class="role-dot dot-re"></span>Cache RE — Responsible Entity</div>
+      <div class="role-pill rp-admin"><span class="role-dot dot-admin"></span>FundOps — Administrator</div>
+      <div class="role-pill rp-cust"><span class="role-dot dot-cust"></span>Sandhurst — Custodian</div>
+      <div class="role-pill rp-inv"><span class="role-dot dot-inv"></span>Investor</div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div style="margin-bottom:8px">
+    <div class="sidebar-heading">Fund Structure</div>
+    <a class="nav-item" onclick="show('structure')"><span class="nav-dot" style="background:var(--dark)"></span>Fund Structure Overview</a>
+  </div>
+  <div style="margin-bottom:8px">
+    <div class="sidebar-heading">Fund Flows</div>
+    <a class="nav-item active" onclick="show('unitisation')"><span class="nav-dot dot-im"></span>Unitisation Flow</a>
+    <a class="nav-item" onclick="show('distributions')"><span class="nav-dot dot-admin"></span>Quarterly Distributions</a>
+    <a class="nav-item" onclick="show('performance')"><span class="nav-dot dot-re"></span>Performance Fee</a>
+  </div>
+  <div style="margin-bottom:8px">
+    <div class="sidebar-heading">Your Obligations</div>
+    <a class="nav-item" onclick="show('pi')"><span class="nav-dot dot-re"></span>Proper Instructions</a>
+    <a class="nav-item" onclick="show('reports-ops')"><span class="nav-dot dot-im"></span>Reporting — Operations</a>
+    <a class="nav-item" onclick="show('reports-gov')"><span class="nav-dot dot-im"></span>Reporting — Governance</a>
+  </div>
+  <div>
+    <div class="sidebar-heading">Reference</div>
+    <a class="nav-item" onclick="show('checklist')"><span class="nav-dot" style="background:var(--green)"></span>Monthly Checklist</a>
+    <a class="nav-item" onclick="show('contacts')"><span class="nav-dot" style="background:var(--muted)"></span>How to Reach Us</a>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ══════════ FUND STRUCTURE ══════════ -->
+<div class="section" id="s-structure">
+  <div class="section-tag">At a glance</div>
+  <div class="section-title">Fund Structure Overview</div>
+  <div class="section-desc">The Moneybox Credit Fund operates as a registered unit trust. Each party has a defined role and can only act within their authority. All money movement requires Cache RE approval before the custodian acts.</div>
+
+  <div class="struct-wrap">
+    <div class="struct-diagram" id="struct-main" style="height:520px">
+      <svg class="struct-svg" id="struct-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-dark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#242321" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr-re" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#7c6cdc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr-im" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr-admin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#3ab89a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr-cust" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#e05252" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- Row 1: Investor (top centre) -->
+      <div class="struct-node investor" id="sn-investor" style="position:absolute;top:0;left:50%;transform:translateX(-50%)">
+        <div class="node-tag">Capital</div>
+        <div class="node-label">Investors</div>
+        <div class="node-sub">Apply & redeem units</div>
+      </div>
+
+      <!-- Row 2: Cache RE (centre) -->
+      <div class="struct-node re" id="sn-re" style="position:absolute;top:120px;left:50%;transform:translateX(-50%);min-width:148px">
+        <div class="node-tag">Responsible Entity</div>
+        <div class="node-label">Cache RE</div>
+        <div class="node-sub">Legal title · Oversight · Approves all PIs</div>
+      </div>
+
+      <!-- Row 3: three nodes -->
+      <!-- FundOps Admin (left) -->
+      <div class="struct-node admin" id="sn-admin" style="position:absolute;top:256px;left:8%">
+        <div class="node-tag">Administrator</div>
+        <div class="node-label">FundOps</div>
+        <div class="node-sub">NAV · Unitisation · Distributions</div>
+      </div>
+
+      <!-- Sandhurst Custodian (centre) -->
+      <div class="struct-node custodian" id="sn-cust" style="position:absolute;top:256px;left:50%;transform:translateX(-50%)">
+        <div class="node-tag">Custodian</div>
+        <div class="node-label">Sandhurst</div>
+        <div class="node-sub">Holds & releases Fund assets</div>
+      </div>
+
+      <!-- Moneybox IM (right) -->
+      <div class="struct-node im" id="sn-im" style="position:absolute;top:256px;right:8%">
+        <div class="node-tag">Investment Manager</div>
+        <div class="node-label">Butn / Moneybox IM</div>
+        <div class="node-sub">Portfolio decisions · Loan deployment</div>
+      </div>
+
+      <!-- Row 4: Moneybox SPV (bottom centre-right) -->
+      <div class="struct-node spv" id="sn-spv" style="position:absolute;top:400px;left:50%;transform:translateX(-50%)">
+        <div class="node-tag">SPV</div>
+        <div class="node-label">Moneybox SPV</div>
+        <div class="node-sub">Receives & deploys loan capital</div>
+      </div>
+    </div>
+
+    <div class="struct-legend">
+      <div class="leg-item"><div class="leg-line solid"></div> Money flow (approved PI required)</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--re);height:2px"></div> RE approval / instruction</div>
+      <div class="leg-item"><div class="leg-line" style="height:2px;background:repeating-linear-gradient(90deg,var(--admin) 0,var(--admin) 4px,transparent 4px,transparent 8px)"></div> Data / reporting</div>
+      <div class="leg-item"><div class="leg-line" style="height:2px;background:repeating-linear-gradient(90deg,#999 0,#999 4px,transparent 4px,transparent 8px)"></div> Distribution to investors</div>
+    </div>
+  </div>
+
+  <div class="req-grid">
+    <div class="req-card re-border">
+      <div class="req-badge" style="background:var(--re-bg);color:var(--re)">Cache RE</div>
+      <div class="req-title">Responsible Entity</div>
+      <div class="req-body">Holds legal title to all Fund assets on behalf of investors. The central authority — all money movement must be approved by Cache RE before the custodian acts. Issues instructions to Sandhurst after reviewing and approving PIs from the IM.</div>
+    </div>
+    <div class="req-card im-border">
+      <div class="req-badge" style="background:var(--im-bg);color:var(--im)">Butn / Moneybox IM</div>
+      <div class="req-title">Investment Manager</div>
+      <div class="req-body">Manages the Fund's assets once they reach the Moneybox SPV. Responsible for loan origination, credit assessment, and portfolio management. Must submit a Proper Instruction to Cache RE for every deployment of Fund capital.</div>
+    </div>
+    <div class="req-card admin-border">
+      <div class="req-badge" style="background:var(--admin-bg);color:var(--admin)">FundOps</div>
+      <div class="req-title">Administrator</div>
+      <div class="req-body">Handles unitisation, NAV calculation, unit registry, and distribution processing. Receives data from the IM, prepares financials, and sends distribution packs to Cache RE for approval. All submissions go via the FundOps Help Center.</div>
+    </div>
+    <div class="req-card cust-border">
+      <div class="req-badge" style="background:var(--custodian-bg);color:var(--custodian)">Sandhurst</div>
+      <div class="req-title">Custodian</div>
+      <div class="req-body">Holds the Fund's money in the Operating Account. Releases funds only on instruction from Cache RE (after RE approves a valid PI). The IM cannot instruct Sandhurst directly — all custodian instructions flow from Cache.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ UNITISATION ══════════ -->
+<div class="section active" id="s-unitisation">
+  <div class="section-tag">Fund flow</div>
+  <div class="section-title">Unitisation Flow</div>
+  <div class="section-desc">How investor money moves from application through to deployment in the Moneybox SPV — and what Butn / Moneybox IM must do at each stage.</div>
+
+  <!-- compact structure strip -->
+  <div class="struct-strip">
+    <div class="strip-node"><div class="strip-dot" style="background:var(--investor)">INV</div>Investor</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:#8860d0">APP</div>Applications Acct</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--admin)">ADM</div>FundOps unitises</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--custodian)">SAN</div>Operating Acct (Sandhurst)</div>
+    <div class="strip-arrow" style="color:var(--lime);font-weight:700">→ PI →</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--re)">CRE</div>Cache RE approves</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--custodian)">SAN</div>Sandhurst releases</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--im)">SPV</div>Moneybox SPV</div>
+  </div>
+
+  <div class="alert warn">
+    <div class="alert-icon">⚡</div>
+    <div><strong>Money does not move to the SPV automatically.</strong> You must submit a compliant Proper Instruction (PI) to Cache RE via a Trustee Help Center ticket. No money is released without RE approval and custodian execution.</div>
+  </div>
+
+  <div class="flow-wrap">
+    <div class="flow-title">Step-by-step — Unitisation</div>
+    <div class="flow">
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-inv"><span class="role-dot dot-inv"></span>Investor</div>
+          <div class="flow-action">Investor submits application</div>
+          <div class="flow-detail">The investor sends their application through the Moneybox platform. Application money lands in the Applications Account.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">FundOps unitises and transfers to Operating Account</div>
+          <div class="flow-detail">FundOps processes the application, issues units to the investor, and transfers the money into the Operating Account (the custodian account held with Sandhurst).</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-im"><span class="role-dot dot-im"></span>Butn / Moneybox IM — Your action</div>
+          <div class="flow-action">You submit a Proper Instruction to Cache RE</div>
+          <div class="flow-detail">To move money from the Operating Account to the Moneybox SPV, you must send a Proper Instruction (PI) to Cache RE via a <strong>Trustee Help Center ticket</strong>.</div>
+          <div class="flow-sub">
+            <strong>The PI must include:</strong>
+            <ul style="margin-top:6px;margin-left:16px;list-style:disc">
+              <li><strong>4 signature blocks</strong> — 2 from authorised signatories of Moneybox IM + 2 from authorised signatories of the RE (Cache will countersign)</li>
+              <li><strong>Loan details</strong> — full details of the loan you intend to enter into with the Fund's money, as per section 5 of the Loan Agreement</li>
+              <li>The <strong>Product Pack</strong> report (see Reporting — Governance) must be attached to the PI</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-re"><span class="role-dot dot-re"></span>Cache RE</div>
+          <div class="flow-action">Cache RE reviews and approves (or rejects) the PI</div>
+          <div class="flow-detail">Cache RE will review the PI, the loan details, and the supporting Product Pack. If satisfied, Cache RE will countersign and forward the PI to Sandhurst for execution. If rejected, you will be notified and must resubmit.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-cust"><span class="role-dot dot-cust"></span>Sandhurst — Custodian</div>
+          <div class="flow-action">Sandhurst releases funds to Moneybox SPV</div>
+          <div class="flow-detail">The custodian releases only the requested amount from the Operating Account to the Moneybox SPV. From the moment funds reach the SPV, Moneybox IM controls the money within the terms of the Loan Agreement.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ DISTRIBUTIONS ══════════ -->
+<div class="section" id="s-distributions">
+  <div class="section-tag">Fund flow</div>
+  <div class="section-title">Quarterly Distributions</div>
+  <div class="section-desc">How distributions are calculated and paid to investors at the end of each quarter — and what Butn / Moneybox IM must do before, during, and after.</div>
+
+  <!-- compact structure strip -->
+  <div class="struct-strip">
+    <div class="strip-node"><div class="strip-dot" style="background:var(--im)">IM</div>IM sends data + interest $</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--admin)">ADM</div>FundOps prelim financials</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--im)">IM</div>IM provides allocation per investor</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--re)">CRE</div>Cache RE approves dist. pack</div>
+    <div class="strip-arrow">→</div>
+    <div class="strip-node"><div class="strip-dot" style="background:var(--admin)">ADM</div>Admin distributes to investors</div>
+  </div>
+
+  <div class="alert warn">
+    <div class="alert-icon">⚡</div>
+    <div><strong>Two things must happen after the last business day of the quarter — before distributions can proceed:</strong><br>
+    (1) You must provide final month's data for NAV calculation via FundOps Help Center ticket.<br>
+    (2) You must send the full interest amounts ($) from the SPV back to the custodian Operating Account.</div>
+  </div>
+
+  <div class="flow-wrap">
+    <div class="flow-title">Step-by-step — Quarterly Distribution</div>
+    <div class="flow">
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-im"><span class="role-dot dot-im"></span>Butn / Moneybox IM — Your action</div>
+          <div class="flow-action">After last business day of quarter — two simultaneous actions</div>
+          <div class="flow-detail">
+            <ul>
+              <li><strong>Action 1 (Data):</strong> Provide the final month's data for NAV calculation through a ticket in the FundOps Help Center.</li>
+              <li><strong>Action 2 (Cash):</strong> Send the full interest amounts ($) from the Moneybox SPV back to the Operating Account (Sandhurst/Custody). This cash is what will be distributed to investors.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">Admin provides preliminary financials to IM</div>
+          <div class="flow-detail">FundOps prepares and provides the preliminary financials to the Investment Manager by the <strong>5th business day after quarter's end</strong>.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-im"><span class="role-dot dot-im"></span>Butn / Moneybox IM — Your action</div>
+          <div class="flow-action">You provide distribution calculations and allocations to Admin</div>
+          <div class="flow-detail">After reviewing the preliminary financials, you must provide Admin with:
+            <ul>
+              <li>Distribution amounts for each investor</li>
+              <li>Whether each investor's distribution is a <strong>cash distribution</strong> or a <strong>reinvestment (DRP — Distribution Reinvestment Plan)</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">Admin sends Distribution Pack to Cache RE for approval</div>
+          <div class="flow-detail">FundOps compiles the Distribution Pack and sends it to Cache RE for review and approval.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-re"><span class="role-dot dot-re"></span>Cache RE</div>
+          <div class="flow-action">Cache RE reviews and approves the Distribution Pack</div>
+          <div class="flow-detail">Cache RE reviews the distribution calculations, approves (if applicable), and instructs Admin to proceed.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">6</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">Admin distributes to investors</div>
+          <div class="flow-detail">Admin sends each investor either: (a) a <strong>cash distribution</strong> to their nominated bank account, or (b) a <strong>reinvestment of units</strong> (DRP). Redemptions are also processed at this stage.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PERFORMANCE FEE ══════════ -->
+<div class="section" id="s-performance">
+  <div class="section-tag">Fund flow</div>
+  <div class="section-title">Performance Fee</div>
+  <div class="section-desc">How performance fees are calculated, approved, and released from the Fund. A Proper Instruction with specific invoice requirements is needed — Cache RE must approve before any money moves.</div>
+
+  <div class="alert info">
+    <div class="alert-icon">📋</div>
+    <div><strong>Admin calculates first.</strong> You do not initiate the performance fee process — FundOps/Admin calculates it and sends you the calculations for review first.</div>
+  </div>
+
+  <div class="flow-wrap">
+    <div class="flow-title">Step-by-step — Performance Fee</div>
+    <div class="flow">
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">Admin calculates the performance fee</div>
+          <div class="flow-detail">FundOps calculates the performance fee based on the fund's performance metrics as agreed in the fund documents.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-admin"><span class="role-dot dot-admin"></span>FundOps / Admin</div>
+          <div class="flow-action">Admin sends calculations to IM for approval</div>
+          <div class="flow-detail">FundOps sends the performance fee calculations to Moneybox IM for review and approval before any instruction is issued.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-im"><span class="role-dot dot-im"></span>Butn / Moneybox IM — Your action</div>
+          <div class="flow-action">You approve and send invoice + PI to Cache RE</div>
+          <div class="flow-detail">If you agree with the calculations, send both an <strong>invoice</strong> AND a <strong>Proper Instruction</strong> to Cache RE via a Trustee Help Center ticket.</div>
+          <div class="flow-sub">
+            <strong>Invoice must contain:</strong>
+            <ul>
+              <li>Amount of performance fee</li>
+              <li>Description of the item</li>
+              <li>Date</li>
+              <li>Bank details of the account to receive the fee</li>
+              <li>Addressed to the Fund (not to Cache or FundOps)</li>
+            </ul>
+          </div>
+          <div class="flow-sub" style="margin-top:10px">
+            <strong>Proper Instruction must:</strong>
+            <ul>
+              <li>Instruct the Custodian to release money from the Ops account to the designated IM account</li>
+              <li>Be signed by <strong>2 authorised signatories from Cache RE</strong> + <strong>2 authorised signatories from Moneybox IM</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-re"><span class="role-dot dot-re"></span>Cache RE</div>
+          <div class="flow-action">Cache RE reviews calculations, invoice and PI</div>
+          <div class="flow-detail">Cache RE independently reviews whether the performance fee is valid per the fund documents, that the invoice is correctly addressed and complete, and that the PI is properly signed. RE may reject if any element is missing or incorrect.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-role role-cust"><span class="role-dot dot-cust"></span>Sandhurst — Custodian</div>
+          <div class="flow-action">Custodian releases performance fee to IM's account</div>
+          <div class="flow-detail">If Cache RE approves, it sends the PI to Sandhurst. Sandhurst releases the performance fee from the Operating Account to the IM's nominated account as specified in the PI.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PROPER INSTRUCTIONS ══════════ -->
+<div class="section" id="s-pi">
+  <div class="section-tag">Key requirement</div>
+  <div class="section-title">Proper Instructions (PI)</div>
+  <div class="section-desc">A Proper Instruction is the formal mechanism for requesting Cache RE to authorise money movement out of the Fund. All PIs must meet specific requirements — incomplete PIs will be rejected.</div>
+
+  <div class="alert danger">
+    <div class="alert-icon">🚫</div>
+    <div><strong>No money moves without a valid PI approved by Cache RE.</strong> The custodian (Sandhurst) will only release funds upon receiving instructions from the RE — not directly from you.</div>
+  </div>
+
+  <div class="sub-heading">When do you need a PI?</div>
+  <div class="req-grid">
+    <div class="req-card im-border">
+      <div class="req-badge" style="background:var(--im-bg);color:var(--im)">Required for</div>
+      <div class="req-title">Deploying funds to Moneybox SPV</div>
+      <div class="req-body">Every time money needs to be deployed from the Operating Account to the Moneybox SPV to finance a loan. Must be accompanied by the Product Pack report and full loan details.</div>
+    </div>
+    <div class="req-card im-border">
+      <div class="req-badge" style="background:var(--im-bg);color:var(--im)">Required for</div>
+      <div class="req-title">Performance Fee payment</div>
+      <div class="req-body">When claiming an approved performance fee. Must be accompanied by the invoice addressed to the Fund and include full bank details of the receiving account.</div>
+    </div>
+  </div>
+
+  <div class="sub-heading">PI Requirements — Always</div>
+  <div class="pi-box">
+    <span class="pi-label">Proper Instruction — Mandatory Elements</span>
+    <ul>
+      <li><strong>4 signature blocks</strong> — 2 from authorised signatories of Moneybox IM Pty Ltd + 2 from authorised signatories of Cache RE (RE countersigns on approval)</li>
+      <li><strong>Clear instruction</strong> to the Custodian specifying the exact amount to be released and the destination account</li>
+      <li><strong>Loan details</strong> (for SPV deployment) — as per section 5 of the Loan Agreement, including purpose, amount, term, rate, and borrower</li>
+      <li><strong>Submitted via Trustee Help Center ticket</strong> — not by email or any other channel</li>
+    </ul>
+  </div>
+
+  <div class="sub-heading">PI for Loan Deployment — Additional Requirement</div>
+  <div class="alert info">
+    <div class="alert-icon">📎</div>
+    <div><strong>Attach the Product Pack report with every deployment PI.</strong> The Product Pack must show the nature of the loan, nature of security, asset type, diversification proportion, and any concentration implications. See Reporting — Governance for the full Product Pack requirements.</div>
+  </div>
+
+  <div class="sub-heading">How to Submit</div>
+  <div class="req-card re-border" style="max-width:600px">
+    <div class="req-badge" style="background:var(--re-bg);color:var(--re)">Process</div>
+    <div class="req-title">Submit via Trustee Help Center</div>
+    <div class="req-body">
+      <ul>
+        <li>Log in to the Trustee Help Center (contact Cache for access if you don't have it)</li>
+        <li>Open a new ticket — select the relevant category (Loan Deployment / Performance Fee)</li>
+        <li>Attach the signed PI document and all supporting materials (Product Pack, invoice as applicable)</li>
+        <li>Cache RE will review and respond within the agreed SLA. If approved, Cache RE countersigns and forwards to Sandhurst</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ REPORTS — OPERATIONS ══════════ -->
+<div class="section" id="s-reports-ops">
+  <div class="section-tag">Your obligations</div>
+  <div class="section-title">Reporting — Operations</div>
+  <div class="section-desc">As Investment Manager, you are responsible for managing the Fund's assets once money reaches the SPV. Admin requires a set of reports on a monthly and quarterly basis to perform its duties on time.</div>
+
+  <div class="alert warn">
+    <div class="alert-icon">⚡</div>
+    <div><strong>These reports must be submitted on time.</strong> FundOps cannot calculate the NAV, process distributions, or produce investor statements without the data you provide. Late submissions delay the entire fund operations cycle.</div>
+  </div>
+
+  <table class="report-table">
+    <thead>
+      <tr><th>Report</th><th>What to include</th><th>Frequency</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NAV Pack</td>
+        <td>Monthly transactions register, including:
+          <ul style="margin-left:14px;list-style:disc;margin-top:4px">
+            <li>Applications (principal)</li>
+            <li>Accrued interests</li>
+            <li>Any bad debts / impairments</li>
+            <li>Any fees and costs</li>
+          </ul>
+          <em style="font-size:12px;color:var(--muted)">Submit via FundOps Help Center ticket</em>
+        </td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>SPV Financials</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>Current holdings</li>
+            <li>Monthly valuation report</li>
+            <li>Full general ledger</li>
+            <li>Any fees and costs</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Loan Book / Asset Register</td>
+        <td>Complete register of all loan assets held in the SPV, their current status, accrued interest, and any impairment flags.</td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Management Financials — P&L</td>
+        <td>Profit and loss statement for the period.</td>
+        <td><span class="freq-badge freq-monthly">Monthly</span><br><span style="font-size:11px;color:var(--muted)">Within 7 business days</span></td>
+      </tr>
+      <tr>
+        <td>Management Reports</td>
+        <td>Concentration risk metrics including:
+          <ul style="margin-left:14px;list-style:disc;margin-top:4px">
+            <li>Interest rate concentration</li>
+            <li>LVRs and metrics per Credit Policy</li>
+            <li>All reports/data in Risk Management section of IPS (section 5.2)</li>
+            <li>PPSR</li>
+            <li>Credit assessment reports per Credit Policy</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Distributions Data</td>
+        <td>Data for NAV calculation for the final month of the quarter + distribution allocation per investor (cash or DRP) + any fees and costs.</td>
+        <td><span class="freq-badge freq-quarterly">Quarterly</span></td>
+      </tr>
+      <tr>
+        <td>Loan Impairment Value</td>
+        <td>Updated impairment value of any loan in the portfolio showing signs of default or deterioration.</td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Investment Committee Reports</td>
+        <td>Minutes of each Investment Committee meeting as per the Investment Committee Charter.</td>
+        <td><span class="freq-badge freq-trigger">After each IC meeting</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════ REPORTS — GOVERNANCE ══════════ -->
+<div class="section" id="s-reports-gov">
+  <div class="section-tag">Your obligations</div>
+  <div class="section-title">Reporting — Monitoring & Governance</div>
+  <div class="section-desc">These reports go beyond operations — they allow Cache RE to monitor mandate compliance, credit quality, and governance arrangements. Some are one-off, some are triggered by events, some are periodic.</div>
+
+  <table class="report-table">
+    <thead>
+      <tr><th>Report</th><th>What to include</th><th>Frequency</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Loan Portfolio Report</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>Size of portfolio by FUM</li>
+            <li>Size of portfolio by number of loans/debt assets</li>
+            <li>Number of borrowers</li>
+            <li>Diversity across loan purposes and credit structure/exposure type</li>
+            <li>Concentration risk — <strong>no more than 20% in any single category</strong>. IC to monitor and report any deviation</li>
+            <li>Longest/shortest term of maturity — <strong>target 12–18 months</strong></li>
+            <li>Median interest rates</li>
+            <li>Median LVR and loan size</li>
+            <li>If any LVR deviation: provide reason as per Credit Policy</li>
+            <li>Historical and current defaults</li>
+            <li>Any recovery action taken against defaults</li>
+            <li>PPSR details</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Loan Impairment Value</td>
+        <td>Monthly report showing and explaining any increase or decrease in asset value of impaired loans.</td>
+        <td><span class="freq-badge freq-monthly">Monthly</span></td>
+      </tr>
+      <tr>
+        <td>Credit Risk & Loan Management Policy</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>How credit assessments occur</li>
+            <li>Process for undertaking credit risk assessment</li>
+            <li>Any credit or other committees responsible for assessing credit risk or approving loans</li>
+            <li>Any criteria triggering additional review (value, loan purpose, credit quality)</li>
+            <li>Steps taken to preserve capital</li>
+            <li>How and when security/collateral assessments occur, and at what frequency</li>
+            <li>Any review triggers</li>
+            <li>Which function within the IM's business undertakes these reviews</li>
+            <li>Internal vs external valuation experts — if external, how they are selected</li>
+            <li>How ongoing loan performance is monitored and managed</li>
+            <li>Management of interest rate risks</li>
+            <li>Ongoing default risk monitoring</li>
+            <li>Default recovery action processes</li>
+            <li>Any restrictions on loan purposes or borrower types</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-onetime">One-off</span><br><span style="font-size:11px;color:var(--muted)">+ any time policy changes</span></td>
+      </tr>
+      <tr>
+        <td>Valuation Report / Policy</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>Valuation processes and any policies in place</li>
+            <li>Frequency of valuation</li>
+            <li>Any valuation triggers</li>
+            <li>Any dedicated function within the business tasked with valuations</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-onetime">One-off</span><br><span style="font-size:11px;color:var(--muted)">+ any time policy changes</span></td>
+      </tr>
+      <tr>
+        <td>Valuation of Loans</td>
+        <td>Report showing and explaining any increase or decrease in asset value of loans in the portfolio.</td>
+        <td><span class="freq-badge freq-quarterly">Quarterly</span></td>
+      </tr>
+      <tr>
+        <td>Redemptions & Liquidity Report</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>Stress testing results as per IPS &amp; PDS</li>
+            <li>Types of stress testing used</li>
+            <li>How restrictions on redemptions are assessed</li>
+            <li>Historical redemption processing timeframes</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-annual">Annual</span><br><span style="font-size:11px;color:var(--muted)">Within 6 months of first loan issued (IPS s5.2). Target: August, aligned with TMD review</span></td>
+      </tr>
+      <tr>
+        <td>Distribution Strategy Report</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>How the Fund is promoted to prospective retail investors</li>
+            <li>Distribution channels used</li>
+            <li>Proportion of investments made under advice</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-annual">Annual</span><br><span style="font-size:11px;color:var(--muted)">Prior to commencement of any activity + within 1 month post-activity/campaign</span></td>
+      </tr>
+      <tr>
+        <td>Product Pack</td>
+        <td>
+          Provided with every Proper Instruction for loan deployment:
+          <ul style="margin-left:14px;list-style:disc;margin-top:4px">
+            <li>Nature of loan (category of finance)</li>
+            <li>Nature of security</li>
+            <li>Asset type</li>
+            <li>Diversification proportion if the loan is approved</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-trigger">With each PI</span><br><span style="font-size:11px;color:var(--muted)">Any time money is deployed to finance a loan</span></td>
+      </tr>
+      <tr>
+        <td>Governance Arrangements</td>
+        <td>
+          <ul style="margin-left:14px;list-style:disc">
+            <li>Any functions or committees tasked with monitoring the mandate</li>
+            <li>Proportion of loans made to related parties</li>
+            <li>Proportion of fund on-lent by related parties</li>
+            <li>Policies and procedures for related party lending and conflict management</li>
+            <li>Details of internal reporting on portfolio performance, defaults, and arrears</li>
+          </ul>
+        </td>
+        <td><span class="freq-badge freq-onetime">One-off</span><br><span style="font-size:11px;color:var(--muted)">+ any time governance arrangements change</span></td>
+      </tr>
+      <tr>
+        <td>Diversification Change Report</td>
+        <td>Notification and explanation of any change to diversification thresholds within the portfolio.</td>
+        <td><span class="freq-badge freq-trigger">On change</span><br><span style="font-size:11px;color:var(--muted)">Any time there is a change to policy/processes</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert warn">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>Concentration limit:</strong> No more than 20% of the portfolio in any single category. If any deviation occurs, you must report it to the IC, document it at the IC meeting, and notify Cache RE. If LVR deviates from policy, you must provide a written reason to Cache RE citing the Credit Policy.</div>
+  </div>
+</div>
+
+<!-- ══════════ MONTHLY CHECKLIST ══════════ -->
+<div class="section" id="s-checklist">
+  <div class="section-tag">Monthly reference</div>
+  <div class="section-title">Monthly & Quarterly Checklist</div>
+  <div class="section-desc">Use this checklist to make sure you've completed everything required each month and each quarter. Click to mark done.</div>
+
+  <div class="sub-heading">Every Month</div>
+  <div class="progress-bar"><div class="progress-fill" id="mth-progress" style="width:0%"></div></div>
+  <div class="progress-label" id="mth-count">0 of 7 monthly items checked</div>
+  <ul class="checklist" id="mth-checklist">
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>NAV Pack submitted via FundOps Help Center ticket</strong><span>Monthly transactions register: applications (principal), accrued interests, bad debts, fees and costs.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>SPV Financials provided to Admin</strong><span>Current holdings, monthly valuation report, full general ledger, fees and costs.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Loan Book / Asset Register provided to Admin</strong><span>Full register of loan assets, current status, accrued interest, impairment flags.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Loan Portfolio Report submitted</strong><span>FUM size, number of loans, borrower count, diversity, concentration check (&lt;20% per category), LVR, defaults, PPSR.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Loan Impairment Value report submitted</strong><span>Any increase or decrease in impaired loan values — explain all movements.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Management Financials — P&L submitted within 7 business days</strong><span>Profit and loss statement for the month.</span></div></li>
+    <li onclick="tick(this,'mth')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Management Reports / concentration risk metrics submitted</strong><span>Interest rate concentration, LVRs, credit policy metrics, PPSR, credit assessment reports per Credit Policy, all IPS s5.2 data.</span></div></li>
+  </ul>
+
+  <div class="sub-heading">Every Quarter (in addition to monthly)</div>
+  <div class="progress-bar"><div class="progress-fill" id="qtr-progress" style="width:0%"></div></div>
+  <div class="progress-label" id="qtr-count">0 of 6 quarterly items checked</div>
+  <ul class="checklist" id="qtr-checklist">
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>After last business day: final month NAV data submitted via FundOps Help Center</strong><span>Must be submitted before Admin can prepare preliminary financials. Triggers the distribution process.</span></div></li>
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>After last business day: full interest amounts ($) returned to Operating Account</strong><span>Transfer interest from Moneybox SPV back to the custodian Operating Account at Sandhurst — required before distributions can be paid.</span></div></li>
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>After preliminary financials received: distribution allocations provided to Admin</strong><span>Specify per-investor amounts and whether each is cash or DRP reinvestment.</span></div></li>
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Valuation of Loans report submitted</strong><span>Quarterly report explaining any increase or decrease in asset value of loans.</span></div></li>
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Performance fee: review Admin's calculations and issue invoice + PI if applicable</strong><span>Invoice must be addressed to the Fund, include amount, item, date, bank details. PI needs 4 signatures (2 IM + 2 RE).</span></div></li>
+    <li onclick="tick(this,'qtr')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Investment Committee minutes submitted after each IC meeting</strong><span>As per Investment Committee Charter. Submit after every IC meeting that occurs in the quarter.</span></div></li>
+  </ul>
+
+  <div class="sub-heading">Per Loan Deployment (each time money is deployed)</div>
+  <div class="progress-bar"><div class="progress-fill" id="loan-progress" style="width:0%"></div></div>
+  <div class="progress-label" id="loan-count">0 of 3 deployment items checked</div>
+  <ul class="checklist" id="loan-checklist">
+    <li onclick="tick(this,'loan')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Product Pack prepared and ready to attach to PI</strong><span>Nature of loan, nature of security, asset type, diversification proportion if loan approved.</span></div></li>
+    <li onclick="tick(this,'loan')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>Proper Instruction prepared with 4 signature blocks and full loan details</strong><span>2 IM signatories + 2 RE signatories. Loan details per section 5 of the Loan Agreement.</span></div></li>
+    <li onclick="tick(this,'loan')"><div class="check-box"><span class="check-icon">✓</span></div><div class="check-text"><strong>PI submitted via Trustee Help Center ticket with Product Pack attached</strong><span>Do not send by email. Cache RE must receive and approve before Sandhurst will release funds.</span></div></li>
+  </ul>
+</div>
+
+<!-- ══════════ CONTACTS ══════════ -->
+<div class="section" id="s-contacts">
+  <div class="section-tag">Reference</div>
+  <div class="section-title">How to Reach Us</div>
+  <div class="section-desc">The right channel for the right request. Using the correct channel ensures your submissions are logged, tracked, and actioned within SLA.</div>
+
+  <div class="req-grid">
+    <div class="req-card re-border">
+      <div class="req-badge" style="background:var(--re-bg);color:var(--re)">Cache RE — Responsible Entity</div>
+      <div class="req-title">Trustee Help Center</div>
+      <div class="req-body">
+        Use for all <strong>Proper Instructions</strong>:
+        <ul>
+          <li>Loan deployment to Moneybox SPV</li>
+          <li>Performance fee requests (invoice + PI)</li>
+          <li>Any instruction to move Fund money</li>
+        </ul>
+        <br>Contact Cache if you need access to the Trustee Help Center.
+      </div>
+    </div>
+    <div class="req-card admin-border">
+      <div class="req-badge" style="background:var(--admin-bg);color:var(--admin)">FundOps / Admin</div>
+      <div class="req-title">FundOps Help Center</div>
+      <div class="req-body">
+        Use for all <strong>reporting submissions</strong>:
+        <ul>
+          <li>Monthly NAV Pack data</li>
+          <li>Quarterly distribution data (final month NAV)</li>
+          <li>Any operational data requests</li>
+        </ul>
+        <br>Contact Cache if you need access to the FundOps Help Center.
+      </div>
+    </div>
+    <div class="req-card im-border">
+      <div class="req-badge" style="background:var(--im-bg);color:var(--im)">Key Contacts — Cache RE</div>
+      <div class="req-title">General queries & obligations</div>
+      <div class="req-body">
+        For general queries about this Operations Guide, your obligations, or document requirements:<br><br>
+        <strong>sasha.inquimbert@cacheinvest.com.au</strong><br>
+        <strong>sophie.nettelbeck@cacheinvest.com.au</strong><br><br>
+        Please reference the fund name and your ticket number in all correspondence.
+      </div>
+    </div>
+    <div class="req-card cust-border">
+      <div class="req-badge" style="background:var(--custodian-bg);color:var(--custodian)">Sandhurst — Custodian</div>
+      <div class="req-title">Via Cache only</div>
+      <div class="req-body">
+        <strong>You do not contact Sandhurst directly.</strong> All instructions to the custodian flow through Cache after approval. Sandhurst acts on the PI forwarded to them by Cache, not on your instructions directly.
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<footer><span>CACHE</span> · Moneybox Credit Fund · IM Operations Guide · Confidential · For Butn / Moneybox IM Pty Ltd</footer>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById('s-'+id);
+  if(t) t.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const nav=document.querySelector(`[onclick="show('${id}')"]`);
+  if(nav) nav.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function tick(el,prefix){
+  el.classList.toggle('checked');
+  const list=document.getElementById(prefix+'-checklist');
+  const items=list.querySelectorAll('li');
+  const checked=list.querySelectorAll('li.checked');
+  const pct=Math.round((checked.length/items.length)*100);
+  document.getElementById(prefix+'-progress').style.width=pct+'%';
+  const labels={mth:'monthly',qtr:'quarterly',loan:'deployment'};
+  document.getElementById(prefix+'-count').textContent=`${checked.length} of ${items.length} ${labels[prefix]||''} items checked`;
+}
+
+// ── Fund Structure SVG ──
+function drawStructure(){
+  const wrap = document.getElementById('struct-main');
+  if(!wrap) return;
+  const svg = document.getElementById('struct-svg');
+  // clear old paths
+  while(svg.children.length > 1) svg.removeChild(svg.lastChild);
+
+  function c(id){
+    const el = document.getElementById(id);
+    if(!el) return null;
+    const wr = wrap.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - wr.left + r.width/2,
+      y: r.top - wr.top + r.height/2,
+      t: r.top - wr.top,
+      b: r.top - wr.top + r.height,
+      l: r.left - wr.left,
+      r: r.left - wr.left + r.width,
+      w: r.width, h: r.height
+    };
+  }
+
+  function line(x1,y1,x2,y2,color,dashed,marker){
+    const el = document.createElementNS('http://www.w3.org/2000/svg','line');
+    el.setAttribute('x1',x1); el.setAttribute('y1',y1);
+    el.setAttribute('x2',x2); el.setAttribute('y2',y2);
+    el.setAttribute('stroke',color);
+    el.setAttribute('stroke-width','1.5');
+    if(dashed) el.setAttribute('stroke-dasharray','5 4');
+    if(marker) el.setAttribute('marker-end',`url(#${marker})`);
+    svg.appendChild(el);
+  }
+
+  function path(d,color,dashed,marker){
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d',d);
+    el.setAttribute('fill','none');
+    el.setAttribute('stroke',color);
+    el.setAttribute('stroke-width','1.5');
+    if(dashed) el.setAttribute('stroke-dasharray','5 4');
+    if(marker) el.setAttribute('marker-end',`url(#${marker})`);
+    svg.appendChild(el);
+  }
+
+  function label(x,y,text,color){
+    const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+    el.setAttribute('x',x); el.setAttribute('y',y);
+    el.setAttribute('font-size','9');
+    el.setAttribute('font-family','DM Sans,sans-serif');
+    el.setAttribute('font-weight','600');
+    el.setAttribute('fill',color||'#6b6a68');
+    el.setAttribute('letter-spacing','0.05em');
+    el.setAttribute('text-anchor','middle');
+    el.textContent = text;
+    svg.appendChild(el);
+  }
+
+  const inv  = c('sn-investor');
+  const re   = c('sn-re');
+  const adm  = c('sn-admin');
+  const cust = c('sn-cust');
+  const im   = c('sn-im');
+  const spv  = c('sn-spv');
+
+  if(!inv || !re) return;
+
+  // Investor → Cache RE (application / subscription)
+  line(inv.x, inv.b, re.x, re.t, '#4a8fd4', false, 'arr-dark');
+  label(inv.x + 30, (inv.b + re.t)/2, 'subscribes', '#4a8fd4');
+
+  // Cache RE → FundOps (instruct unitisation)
+  path(`M${re.l} ${re.y} Q${re.l-30} ${(re.y+adm.y)/2} ${adm.r} ${adm.y}`, '#7c6cdc', false, 'arr-re');
+  label(re.l - 55, (re.y+adm.y)/2 - 8, 'instructs', '#7c6cdc');
+
+  // Cache RE → Sandhurst (approve PI → release)
+  line(re.x, re.b, cust.x, cust.t, '#7c6cdc', false, 'arr-re');
+  label(re.x + 28, (re.b + cust.t)/2, 'approves PI', '#7c6cdc');
+
+  // Cache RE → IM (appoints / IMA)
+  path(`M${re.r} ${re.y} Q${re.r+30} ${(re.y+im.y)/2} ${im.l} ${im.y}`, '#7c6cdc', true, 'arr-re');
+  label(re.r + 55, (re.y+im.y)/2, 'IMA', '#7c6cdc');
+
+  // FundOps → Sandhurst (reconcile / data)
+  path(`M${adm.r} ${adm.y+8} L${cust.l} ${cust.y+8}`, '#3ab89a', true, 'arr-admin');
+  label((adm.r+cust.l)/2, adm.y+22, 'reconcile', '#3ab89a');
+
+  // IM → Cache RE (Proper Instruction)
+  path(`M${im.l} ${im.y-10} Q${re.r+40} ${(re.y+im.y)/2-20} ${re.r} ${re.y-10}`, '#f5a623', false, 'arr-im');
+  label(re.r + 68, (re.y+im.y)/2 - 24, 'Proper Instruction', '#f5a623');
+
+  // Sandhurst → SPV (release funds)
+  path(`M${cust.x} ${cust.b} L${spv.x} ${spv.t}`, '#e05252', false, 'arr-cust');
+  label(cust.x + 34, (cust.b+spv.t)/2, 'releases $', '#e05252');
+
+  // IM → SPV (controls after receipt)
+  path(`M${im.x} ${im.b} Q${im.x} ${spv.y} ${spv.r} ${spv.y}`, '#f5a623', true, 'arr-im');
+  label(im.x + 20, im.b + 30, 'controls', '#f5a623');
+
+  // FundOps → Investor (distributions, dashed)
+  path(`M${adm.l} ${adm.y} Q${adm.l-60} ${inv.y} ${inv.l} ${inv.y}`, '#3ab89a', true, 'arr-admin');
+  label(adm.l - 70, (adm.y+inv.y)/2 - 10, 'distributions', '#3ab89a');
+}
+
+// draw after page load and on resize
+window.addEventListener('load', ()=>{ setTimeout(drawStructure, 80); });
+window.addEventListener('resize', drawStructure);
+
+// Redraw when structure nav is clicked
+const _origShow = show;
+window.show = function(id){
+  _origShow(id);
+  if(id === 'structure') setTimeout(drawStructure, 80);
+};
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',function(){
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
